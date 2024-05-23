@@ -1,0 +1,249 @@
+# Select followed by column details
+# followed from and then join
+# then where then group by then
+# order by and finally limit
+
+
+
+# Query movie table
+# Table Column represents variable
+# variables is an unique feature
+
+select * from movie;  # "*" means select all
+# Select column title only
+
+select title from movie;
+
+select title,revenue,budget,runtime from movie;
+select * from movie where title= 'Four Rooms';
+
+select * from movie where runtime > 90;
+
+select title,runtime from movie where runtime >= 90 order by runtime desc;
+select title,runtime from movie where runtime >= 90 order by runtime asc;
+
+select count(*) from movie where runtime > 90;
+
+
+
+
+
+
+
+
+select * from country;
+
+
+
+select * from movie where runtime between 90 and 120 order by runtime desc limit 30;
+
+#stastical functions used on Numeric Variables
+#min(),max(),avg()-mean,std()-standard deviation
+#count(),sum()
+# Run Statistical Function on variable -runtime
+select count(runtime),min(runtime),max(runtime),avg(runtime),std(runtime) from movie;
+
+select count(budget),min(budget),max(budget),avg(budget),std(budget) from movie;
+
+select count(title) from movie where runtime > 106;
+
+select count(title) as frequency from movie where runtime > 106;
+
+select count(title) as frequency from movie where runtime = 0;
+
+
+select title from movie where title like'p%'; 
+
+select count(title) from movie where title like'p%'; 
+
+select count(title) from movie where title like'%p'; 
+
+select title from movie where title like'%Fast%';
+select count(title) as list from movie where title like'%God%';
+select title from movie where runtime >150 and budget > 200000000;
+select count(title) from movie where runtime >150 and budget > 200000000;
+
+#Group By - Summarizes Numerical Data based on Categorical condition
+# Group By must be used with aggregate functions like count,sum,mean,min,max,avg,std,etc.
+#Basic Syntax & Usage
+# select column_name(s) from table_name
+# Where condition
+# group by column_name(s)
+# order by column_name(s);
+
+#Identify distinct categories in movie_status
+select distinct movie_status from movie;
+
+#Frequency counts of movie_status
+
+select movie_status,count(movie_status) as frequency from movie group by movie_status;
+
+select movie_status,avg(budget) as AvgBudget from movie group by movie_status;
+
+#what is std for vote_count for diff movie status
+
+select movie_status,std(vote_count) as VoteCount from movie group by movie_status;
+
+# Joins are used for multi table querying. Different types of joins are used inner,left,right,cross/full
+# there are different methods to use joins in Mysql
+# 1) natural join (default inner or left join)- no need to specify common column/variable.It automatically detects
+# 2) join using(common col name)- In this method common column must be specified
+
+# How many different genre(genre_name) movies are there?
+select genre_name,count(title) as Frequency from movie natural join movie_genres
+natural join genre group by genre_name order by Frequency desc;
+
+#same query can also be written using join
+select genre_name,count(title) as Frequency from movie join movie_genres using (movie_id)
+join genre using (genre_id) group by genre_name order by Frequency desc;
+
+
+select company_name,count(title) as frequency from movie natural join movie_company
+natural join production_company group by company_name order by frequency desc;
+
+#frequency count of movies produced in different countries
+select country_name,count(title) as frequency from movie natural join production_country
+natural join country group by country_name order by frequency desc;
+
+#top 20 most pop action movies
+
+select title,popularity,genre_name from movie 
+natural join movie_genres 
+natural join genre 
+where genre_name='action'
+order by popularity 
+desc limit 20 ;
+
+#who are the top 20 directors
+select distinct title,person_name,popularity,department_name from movie 
+#natural join movie_cast 
+natural join person
+natural join movie_crew
+natural join department
+where department_name='Directing'
+order by popularity 
+desc limit 20 ;
+
+#most popular movies directed by female directors with name
+
+select distinct title,person_name,popularity,gender,depatrment_name from movie 
+natural join movie_cast 
+natural join gender
+natural join department
+natural join person
+where gender='female' and department_name='Directing'
+order by popularity
+desc limit 20;
+
+
+
+select distinct title,person_name,popularity,gender,department_name from movie 
+natural join movie_cast 
+natural join gender
+natural join department
+natural join person
+where person_name='steven spielberg' and department_name='Directing'
+order by popularity
+desc;
+
+
+select count(title)from movie 
+natural join movie_cast 
+natural join gender
+natural join department
+natural join person
+where person_name='steven spielberg' and department_name='Directing'
+order by popularity
+desc;
+
+
+select  genre_name,avg(budget) as AvgBudget  from movie 
+natural join movie_genres 
+natural join genre
+group by genre_name order by AvgBudget desc;
+
+select  distinct title,genre_name,avg(budget) as AvgBudget  from movie 
+natural join movie_genres 
+natural join genre
+group by genre_name,title order by AvgBudget desc;
+
+# what is the avg vote count for diff genre movies
+
+
+select  genre_name,avg(vote_count) as AvgVote  from movie 
+natural join movie_genres 
+natural join genre
+group by genre_name order by AvgVote desc;
+# what is the avg revenue for movies produced by diff production company
+select  company_name,avg(revenue) as AvgRevenue  from movie 
+natural join movie_company 
+natural join production_company
+group by company_name order by AvgRevenue desc;
+
+
+
+
+# Date Functions - working with dates
+# default date format is "YYYY-MM-DD" or "YYYY/MM/DD" or 
+# Datetime format - "YYYY-MM-DD HH:MM:SS"
+# Date Functions are year(),month(),day(),etc.
+
+# How many mvies produced in each year
+
+select year(release_date) as Year, count(title) as frequency 
+from movie group by year(release_date) order by year asc;
+
+# how many movies released year wise and monthwise
+
+select year(release_date) as Year, month(release_date) as month, count(title) as frequency 
+from movie group by year(release_date),month(release_date) order by year asc;
+
+# How many movies released in the year 
+select year(release_date) as Year, month(release_date) as month, count(title) as frequency 
+from movie  where year(release_date) = '2014' group  by year(release_date),
+month(release_date) order by month asc;
+
+select year(release_date) as Year,count(title) as frequency 
+from movie  where year(release_date) = '2014' group  by 
+year(release_date) order by year asc;
+
+
+# how many drama movies released each year
+
+Select year(release_date) as year,genre_name,count(title) as freq from movie 
+natural join movie_genres 
+natural join genre
+where genre_name='drama'
+group by year(release_date) order by genre_name asc;
+
+#How many movies each director directed
+
+Select person_name,count(title) as frequency from movie
+natural join movie_crew
+natural join  movie_cast
+natural join person
+natural join department
+where department_name='directing' group by person_name order by frequency desc;
+
+
+#List of all actors acted in the movie minions
+
+
+Select person_name,title,department_name from movie
+natural join  movie_cast
+natural join person
+natural join department
+where title='minions' and department_name='actors' ; 
+
+
+#who are the directors of top 20 revenue movies.
+Select distinct person_name,title,department_name,revenue from movie
+natural join  movie_crew
+natural join person
+natural join department
+where  department_name='directing' order by revenue desc limit 20;
+
+
+
+
+
